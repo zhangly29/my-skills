@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deploy AI Env Manifest"
+  short_description: "Deploy compact AI-readable environment manifests and checks."
+  default_prompt: "Set up a compact AI environment manifest, refresh script, and ai-env-check command."

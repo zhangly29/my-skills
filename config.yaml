@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/runkids/skillshare/main/schemas/config.schema.json
+sources:
+  skills: /home/liyuan/.config/skillshare/skills
+  agents: /home/liyuan/.config/skillshare/agents
+mode: symlink
+targets:
+  claude:
+    skills:
+      path: /home/liyuan/.claude/skills
+  codex:
+    skills:
+      path: /home/liyuan/.codex/skills
+  omp:
+    skills:
+      path: /home/liyuan/.omp/agent/skills
+ignore:
+  - '**/.DS_Store'
+  - '**/.git/**'
+audit:
+  block_threshold: CRITICAL
