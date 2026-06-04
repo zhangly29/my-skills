@@ -26,7 +26,7 @@ anti-repetition fingerprints, builder `progress_update` required field set, the
 
 ## Validator Entry Points
 
-The shapes below are machine-checked by `python java-reading-project/scripts/validate-progress.py`:
+The shapes below are machine-checked by `uv run python java-reading-project/scripts/validate-progress.py`:
 
 - `--state <progress-state.yaml>` validates the top-level `version`/`progress`/`completed_projects`/`weakpoints`/`node_mastery`/`equipment_unlocked`/`adaptive_summary`/`next_project_bias` shapes.
 - `--all <workspace-dir>` auto-discovers `progress-state.yaml` and `adaptive-training-data.yaml`.
@@ -198,7 +198,7 @@ next_project_bias:
 Validate the assembled object before merge:
 
 ```bash
-cat /tmp/progress_update.yaml | python java-reading-project/scripts/validate-progress.py --progress-update -
+cat /tmp/progress_update.yaml | uv run python java-reading-project/scripts/validate-progress.py --progress-update -
 ```
 
 The builder's final `progress_update` must carry **every field shown in the `completed_projects` entry shape above** (`node_id` … `mastery_review`), **plus** `next_project_bias`. The validator's `PROGRESS_UPDATE_REQUIRED_FIELDS` in `scripts/_schemas.py` is the enforced, exhaustive list — run `--progress-update -` rather than maintaining a parallel checklist here.

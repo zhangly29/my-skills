@@ -32,7 +32,7 @@ builder_input:
   approved_recommendation: { ... }   # consumed verbatim
 ```
 
-`approved_recommendation` is the approved recommendation's **data layer**, consumed verbatim. Its shape is owned by `start-project.md §Recommendation Format` (data layer) — the same YAML the user approved, not a second definition. Do not redefine its fields here. Key fields the builder relies on: `boundary_id`, `seed_id`, `cross_id`, `load_packet.required`, `project_name`, `incident_packet`, `entry_mode`/`corpus_todo`, `double_demo_plan`, `adaptive_plan`, `teaching_slice_candidates`, plus the fingerprint fields (`domain`, `io_shape`, `artifact_shape`, `core_flow`, `primary_data_structures`, `interaction_model`). Validate it with `python java-reading-project/scripts/validate-progress.py --recommendation -` when in doubt.
+`approved_recommendation` is the approved recommendation's internal **data layer**, consumed verbatim. Its shape is owned by `start-project.md §Recommendation Format` (data layer) — the same staged YAML behind the learner-approved display block, not a second definition and not necessarily shown to the user. Do not redefine its fields here. Key fields the builder relies on: `boundary_id`, `seed_id`, `cross_id`, `load_packet.required`, `project_name`, `incident_packet`, `entry_mode`/`corpus_todo`, `double_demo_plan`, `adaptive_plan`, `teaching_slice_candidates`, plus the fingerprint fields (`domain`, `io_shape`, `artifact_shape`, `core_flow`, `primary_data_structures`, `interaction_model`). Validate it with `uv run python java-reading-project/scripts/validate-progress.py --recommendation -` when in doubt.
 
 Project root:
 
@@ -407,6 +407,12 @@ stronger understanding of business flows than Java language details
 
 For Java Reading Project deliverables, annotation is a hard quality gate. The generated code must be readable as a learning artifact on the first pass.
 
+Language rule:
+
+- All generated code comments and Javadocs in learner project source files must be written in Chinese by default, including class-level Javadocs, method Javadocs, inline comments, enum value comments, exception comments, and JDK8 bridge notes.
+- Keep Java identifiers, API names, exception names, command names, package names, Maven coordinates, and raw log/error text in English when that is the precise technical form.
+- Do not use English prose for generated learner-facing source comments unless quoting an original API/error/log message or preserving an identifier's exact wording.
+
 Minimums:
 
 - Every core class has class-level Javadoc explaining responsibility, design intent, non-responsibilities, and extension direction.
@@ -494,11 +500,33 @@ Before writing any user answer, correction, understanding evidence, weakpoint, F
 
 Do not update the first `未回答` section you find. Do not move an answer into a neighboring slice because the text looks related.
 
+### Assessment Logging Order Gate
+
+For `Post-Project Assessment`, preserve prompt order as a hard evidence-integrity rule:
+
+1. Before asking the first assessment prompt, create or verify a dedicated `## Post-Project Assessment` section.
+2. Every assessment prompt must have a stable ordinal and type, such as `Prompt 1 - Main-flow reconstruction`.
+3. Record each answer by appending to the dedicated assessment section in ordinal order. Do not insert by searching for a nearby prompt title, correction text, `transfer_evidence`, or the first matching heading.
+4. Before writing a new prompt entry, read the existing assessment section and determine the next expected ordinal. If the next ordinal would create a gap, duplicate, or out-of-order sequence, stop and repair the assessment section first.
+5. If a prompt was answered out of order during the conversation, normalize the assessment section to canonical order before deriving `REVIEW.md` or `progress_update`.
+6. `REVIEW.md` must summarize assessment results in the same canonical order as `TEACHING_LOG.md`.
+
+Canonical order for the default 5-prompt assessment:
+
+```text
+1. Main-flow reconstruction
+2. Boundary ownership
+3. Failure classification
+4. Bad-design diagnosis
+5. Transfer check
+```
+
 ### Final Teaching Log Audit
 
 Before writing `REVIEW.md` and before merging `progress_update`, audit `TEACHING_LOG.md`:
 
 - every user-initiated question, feedback item, or assessment answer must be under the slice or post-project assessment where it occurred;
+- post-project assessment entries must be contiguous, have unique ordinals, and appear in canonical prompt order before `REVIEW.md` or `progress_update` is derived;
 - `用户主动问题/反馈`, `AI 回应/纠偏`, `理解证据`, `观察到的弱点`, FM IDs, and transfer evidence must describe the same slice or assessment prompt;
 - confirmation-only replies must not create understanding evidence;
 - equipment unlocks must not appear under `Understanding Evidence` unless the learner explicitly used or explained them;
@@ -527,6 +555,7 @@ Apply adaptive assessment follow-up depth:
 
 Record answers in `TEACHING_LOG.md` under a dedicated `Post-Project Assessment` section:
 
+- prompt ordinal and assessment type;
 - prompt;
 - user answer;
 - AI correction;
@@ -605,7 +634,7 @@ At final delivery, output `progress_update` with all fields required by `progres
 Before merging into `{progress_state}`, validate the assembled object:
 
 ```bash
-cat /tmp/progress_update.yaml | python java-reading-project/scripts/validate-progress.py --progress-update -
+cat /tmp/progress_update.yaml | uv run python java-reading-project/scripts/validate-progress.py --progress-update -
 ```
 
 If validation fails, do not merge. Fix the missing/wrong fields, re-emit, then merge.

@@ -433,7 +433,7 @@ Do not delete completed project history, weakpoints, equipment, adaptive summary
 
 ## Progress Data Shapes
 
-The `progress-state.yaml` data shapes (`completed_projects`, `weakpoints`, `equipment_unlocked`, `adaptive_summary`, `next_project_bias`), the anti-repetition fingerprints, and the builder `progress_update` required field set now live in `progress-shapes.md`. Load that packet only when assembling, merging, or validating progress data. `scripts/_schemas.py` is the enforced source of truth, exercised via `python java-reading-project/scripts/validate-progress.py` (`--state`, `--all`, `--progress-update -`, `--policy`, `--check-transition`).
+The `progress-state.yaml` data shapes (`completed_projects`, `weakpoints`, `equipment_unlocked`, `adaptive_summary`, `next_project_bias`), the anti-repetition fingerprints, and the builder `progress_update` required field set now live in `progress-shapes.md`. Load that packet only when assembling, merging, or validating progress data. `scripts/_schemas.py` is the enforced source of truth, exercised via `uv run python java-reading-project/scripts/validate-progress.py` (`--state`, `--all`, `--progress-update -`, `--policy`, `--check-transition`).
 
 ## Corpus Schema And Generated Files
 

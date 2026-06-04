@@ -94,7 +94,7 @@ Defaults: `size=--s`, `teaching_mode=guided`, `build_mode=normal`. Read-only com
 
 ## Command Router
 
-Each command below has an **Execution Checklist** — a numbered sequence the harness can follow step by step. Each step names the reference section that owns its rule. Steps marked with `[validator]` invoke `python java-reading-project/scripts/validate-progress.py`.
+Each command below has an **Execution Checklist** — a numbered sequence the harness can follow step by step. Each step names the reference section that owns its rule. Steps marked with `[validator]` invoke `uv run python java-reading-project/scripts/validate-progress.py`.
 
 ### `jr ask <node-id>`
 
@@ -110,7 +110,7 @@ Create or update perceived-difficulty ask data for one catalog node. This comman
 6. Apply stop criteria (`adaptive-difficulty.md §Stop Criteria`); never push past the cap.
 7. Write new samples and recompute the profile (`adaptive-difficulty.md §Profile Computation`).
 8. Persist to `{adaptive_training_data}`, then refresh `{progress_state}.adaptive_summary.{node_id}` (`runtime-control.md §State Write Rules`).
-9. [validator] `python java-reading-project/scripts/validate-progress.py --adaptive {adaptive_training_data}` — fail-loud if the new file does not validate.
+9. [validator] `uv run python java-reading-project/scripts/validate-progress.py --adaptive {adaptive_training_data}` — fail-loud if the new file does not validate.
 10. Regenerate `{progress_summary}` from `{progress_state}` and report session mode, samples added, confidence band, hardest boundaries/FM, and next-project controls.
 
 ### `jr start <node-id> --s|--m|--b [--auto] [--follow|--micro-follow]`
@@ -124,13 +124,13 @@ Start a reading project only when no active incomplete project exists. Default s
 3. Active-project preflight: if `progress.status ∈ {selected|building|assessment_pending|paused}` and `progress.current_project` is set, stop immediately with the template in `runtime-control.md §Active State Rules`. Zero file writes.
 4. Verify `{catalog_text}` exists and the node is in `catalog-training-map.yaml`. If unmapped, switch to `jr extend-node` flow (`start-project.md §Unmapped Node Extension`).
 5. Compute adaptive level/controls (`adaptive-difficulty.md §Applying To `jr start``) and select **exactly one** corpus-backed candidate by ranking + anti-repetition + equipment-callback matching (`start-project.md §Corpus Candidate Ranking`).
-6. Produce the recommendation as YAML (data layer) per `start-project.md §Recommendation Format` plus a short Chinese display block.
-7. [validator] When the recommendation YAML is staged to a temp file before display, run `python java-reading-project/scripts/validate-progress.py --recommendation /tmp/rec.yaml` first and abort on failure.
+6. Produce and validate the internal recommendation data layer per `start-project.md §Recommendation Format`, then show only the Chinese learner display block. Do not display YAML to the user.
+7. [validator] When the recommendation data layer is staged to a temp file before display, run `uv run python java-reading-project/scripts/validate-progress.py --recommendation /tmp/rec.yaml` first and abort on failure.
 8. Wait for user approval. Do not write progress files yet.
 9. On approval: initialize `{progress_state}` if missing; set active project fields (`runtime-control.md §Active Project Fields`); set `progress.status: selected`; regenerate `{progress_summary}`.
 10. Load `build-project.md`; show `incident_packet` or `design-document` fallback; capture optional `current_investigation_focus`.
 11. For each Teaching Slice: emit Slice Gate → wait for fresh confirmation in `guided` mode → implement → emit Slice Completion (`build-project.md §Slice Gate Template`, `§Slice Completion Template`, `§Code Follow Blocks`).
-12. After build/demo: set `progress.status: assessment_pending`; run post-project assessment (`build-project.md §Post-Project Assessment Contract`); assemble `progress_update`; [validator] `python java-reading-project/scripts/validate-progress.py --progress-update -` (stdin); merge into `{progress_state}` and regenerate `{progress_summary}`.
+12. After build/demo: set `progress.status: assessment_pending`; run post-project assessment (`build-project.md §Post-Project Assessment Contract`); assemble `progress_update`; [validator] `uv run python java-reading-project/scripts/validate-progress.py --progress-update -` (stdin); merge into `{progress_state}` and regenerate `{progress_summary}`.
 
 Initial acknowledgement (after step 1, before step 5):
 
@@ -159,7 +159,7 @@ Continue an active incomplete project. Do not regenerate a recommendation, recre
 7. Wait for confirmation before editing any file.
 8. Resume builder at the current incomplete slice or post-project assessment per status. Do not recreate completed slices.
 9. Continue from step 11 of `jr start`'s checklist (Slice Gate / implementation / Slice Completion) or from §Post-Project Assessment Contract if `status: assessment_pending`.
-10. [validator] After final progress merge: `python java-reading-project/scripts/validate-progress.py --state {progress_state} --policy`.
+10. [validator] After final progress merge: `uv run python java-reading-project/scripts/validate-progress.py --state {progress_state} --policy`.
 
 ### `jr progress <node-id>`
 
@@ -202,7 +202,7 @@ Report current active context. Read-only, no generator/builder.
 4. Render: node, project, size, milestone, slice, follow-block, teaching/build/entry mode, status, investigation focus, adaptive level/profile, latest reading checkpoint, recent weakpoints, recently unlocked equipment.
 5. Recommend the next command (`jr resume` / `jr progress` / `jr start` / `jr ask`).
 6. Do not write any file.
-7. [validator] When the user reports state inconsistency, run `python java-reading-project/scripts/validate-progress.py --state {progress_state} --policy` before answering and surface any failure to the user.
+7. [validator] When the user reports state inconsistency, run `uv run python java-reading-project/scripts/validate-progress.py --state {progress_state} --policy` before answering and surface any failure to the user.
 
 ### `jr pause`
 
@@ -215,7 +215,7 @@ Mark the current active project as paused without modifying project code, `TEACH
 3. Preserve current node/project/size/milestone/slice/entry-mode/investigation-focus/adaptive/teaching-mode/build-mode/follow-block.
 4. Set `progress.status: paused`, `progress.paused_at: <now>`, `progress.pause_reason: user_requested` (`runtime-control.md §Pause And Resume`).
 5. Write `{progress_state}` only; regenerate `{progress_summary}`. **Do not touch** project code, `TEACHING_LOG.md`, corpus, or generated indexes.
-6. [validator] `python java-reading-project/scripts/validate-progress.py --state {progress_state}` to confirm the pause write is well-formed.
+6. [validator] `uv run python java-reading-project/scripts/validate-progress.py --state {progress_state}` to confirm the pause write is well-formed.
 7. Reply: `已暂停当前阅读项目。下次可用 jr resume 从当前 Teaching Slice 继续。`
 
 ### `jr extend-node <node-id>`

@@ -168,8 +168,10 @@ Allowed remediation shapes for the same weakpoint should vary domain, input, flo
 
 Output exactly one recommendation. The recommendation has two layers:
 
-1. **Data layer (YAML)** — the structured contract that, after approval, is consumed as `approved_recommendation` by `build-project.md §Builder Input`. The YAML shape below is the single source of truth.
-2. **Learner display layer (Chinese markdown)** — a short narrative wrapper for the user. It must derive from the YAML fields, not redefine them.
+1. **Internal data layer (YAML)** — the structured contract that, after approval, is consumed as `approved_recommendation` by `build-project.md §Builder Input`. The YAML shape below is the single source of truth.
+2. **Learner display layer (Chinese markdown)** — the only recommendation content shown to the user. It must derive from the YAML fields, not redefine them.
+
+Do not print or paste the YAML data layer in user-facing output. Stage it internally, validate it, keep it available for approval/build handoff, and show only the learner display layer unless the user explicitly asks to inspect the raw data.
 
 ### Data layer
 
@@ -238,26 +240,25 @@ Field rules:
 - `adaptive_plan.basis` is an array; multiple sources may contribute. Use `["default"]` when no ask data, assessment, or weakpoints exist.
 - `mastery_signal` describes the intended learning target, not proof that the learner has mastered it.
 
-This YAML shape can be machine-checked by `python java-reading-project/scripts/validate-progress.py --recommendation -` (pass the YAML on stdin).
+This YAML shape can be machine-checked by `uv run python java-reading-project/scripts/validate-progress.py --recommendation -` (pass the YAML on stdin).
 
 ### Learner display layer
 
-After the data layer is ready, render a short Chinese display block for the user:
+After the data layer is ready and validated, render a short Chinese display block for the user. Focus on what the project does and which enterprise backend slice it represents; avoid exposing internal IDs unless needed for disambiguation.
 
 ```markdown
 ## 推荐项目：<中文项目标题>
 
 - 项目: `<project_name>` · 规模 `<size>` · 入口 `<entry_mode>`
-- 节点边界: `<boundary_id>` / 种子: `<seed_id>` / cross: `<cross_id or null>`
+- 企业切片（enterprise_slice）:
+- 项目做什么:
 - 事故现场（incident_packet）:
 - 你的身份（role_assignment）:
 - 本章对手（antagonist_design）:
-- 做什么:
 - 为什么适合当前节点:
 - 不重复说明（anti-repetition 依据）:
 - demo 信号:
-- 正反馈点:
-- adaptive_plan: `<current_level>` / 控件简述
+- 训练重点:
 ```
 
 Then ask:
@@ -289,7 +290,7 @@ Before showing the recommendation, check:
 Optionally machine-check the data layer:
 
 ```bash
-cat /tmp/recommendation.yaml | python java-reading-project/scripts/validate-progress.py --recommendation -
+cat /tmp/recommendation.yaml | uv run python java-reading-project/scripts/validate-progress.py --recommendation -
 ```
 
 ## Unmapped Node Extension
@@ -343,10 +344,10 @@ Run after edits, in order:
 
 ```bash
 source ~/.zshrc
-.venv/bin/python java-reading-corpus/tools/validate-corpus.py
-.venv/bin/python java-reading-corpus/tools/check-coverage.py
-.venv/bin/python java-reading-corpus/tools/build-index.py
-.venv/bin/python java-reading-corpus/tools/lint-quality.py --node <node-id>
+uv run python java-reading-corpus/tools/validate-corpus.py
+uv run python java-reading-corpus/tools/check-coverage.py
+uv run python java-reading-corpus/tools/build-index.py
+uv run python java-reading-corpus/tools/lint-quality.py --node <node-id>
 ```
 
 If any check fails, fix authored files. Do not patch generated files to hide failures. Publish `quality_status: gold` only after `lint-quality.py` passes. Node `1.1` is the worked reference to emulate.

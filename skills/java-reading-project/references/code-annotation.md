@@ -17,6 +17,12 @@ The goal is to make generated projects readable without turning code into a text
 
 For Java Reading Project deliverables, annotation is a hard quality gate. The generated code must be readable as a learning artifact on the first pass; do not wait for the learner to complain that enum values, class responsibilities, or boundary ownership are unclear.
 
+## Comment Language Rule
+
+- All generated code comments and Javadocs in learner project source files must be written in Chinese by default, including class-level Javadocs, method Javadocs, inline comments, enum value comments, exception comments, and JDK8 bridge notes.
+- Keep Java identifiers, API names, exception names, command names, package names, Maven coordinates, and raw log/error text in English when that is the precise technical form.
+- Do not use English prose for generated learner-facing source comments unless quoting an original API/error/log message or preserving an identifier's exact wording.
+
 ## Mandatory Reading Annotations
 
 Every generated reading project must satisfy these minimums:

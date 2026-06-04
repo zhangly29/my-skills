@@ -57,9 +57,9 @@ Run after edits:
 
 ```bash
 source ~/.zshrc
-.venv/bin/python java-reading-corpus/tools/validate-corpus.py
-.venv/bin/python java-reading-corpus/tools/build-index.py
-.venv/bin/python java-reading-corpus/tools/check-coverage.py
+uv run python java-reading-corpus/tools/validate-corpus.py
+uv run python java-reading-corpus/tools/build-index.py
+uv run python java-reading-corpus/tools/check-coverage.py
 ```
 
 If validation fails, fix authored files. Do not patch generated files to hide failures.

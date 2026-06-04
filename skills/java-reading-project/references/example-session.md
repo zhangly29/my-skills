@@ -363,7 +363,7 @@ evidence. A `jr ask` rating or "我读懂了" would **not** count.〕
 
 ```text
 🤖 (内部) 组装 progress_update → 校验 → 合并：
-   $ python java-reading-project/scripts/validate-progress.py --progress-update - < /tmp/pu.yaml
+   $ uv run python java-reading-project/scripts/validate-progress.py --progress-update - < /tmp/pu.yaml
    Validation passed.
    合并进 progress-state.yaml，status: completed，regenerate progress.md。
 ```

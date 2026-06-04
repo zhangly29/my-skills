@@ -11,21 +11,21 @@ This CLI validates the data contracts described in:
 Examples:
 
     # Validate workspace state files
-    python validate-progress.py --state ../../progress-state.yaml
-    python validate-progress.py --adaptive ../../adaptive-training-data.yaml
+    uv run python validate-progress.py --state ../../progress-state.yaml
+    uv run python validate-progress.py --adaptive ../../adaptive-training-data.yaml
 
     # Validate builder intermediates from stdin
-    cat /tmp/update.yaml | python validate-progress.py --progress-update -
-    cat /tmp/rec.yaml    | python validate-progress.py --recommendation -
+    cat /tmp/update.yaml | uv run python validate-progress.py --progress-update -
+    cat /tmp/rec.yaml    | uv run python validate-progress.py --recommendation -
 
     # Auto-discover all known files in a workspace
-    python validate-progress.py --all /home/me/project/java-read
+    uv run python validate-progress.py --all /home/me/project/java-read
 
     # Cross-shape policy checks (in addition to structural validation)
-    python validate-progress.py --all /home/me/project/java-read --policy
+    uv run python validate-progress.py --all /home/me/project/java-read --policy
 
     # Check that a single status transition is permitted
-    python validate-progress.py --check-transition selected:building
+    uv run python validate-progress.py --check-transition selected:building
 
 Exit codes:
     0 — all selected validations passed

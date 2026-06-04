@@ -109,7 +109,7 @@ Bad prompt shapes:
 The shape below is machine-checked by:
 
 ```bash
-python java-reading-project/scripts/validate-progress.py --adaptive {workspace}/adaptive-training-data.yaml
+uv run python java-reading-project/scripts/validate-progress.py --adaptive {workspace}/adaptive-training-data.yaml
 ```
 
 The validator enforces field presence, enum values, `prompt_id` format, per-node `prompt_id` uniqueness, and `delta == user_rating - model_predicted_rating`. Run it after every `jr ask` write.
